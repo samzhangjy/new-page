@@ -23,6 +23,6 @@ const ColorSchemeToggle = () => {
       </ActionIcon>
     </Group>
   );
-}
+};
 
 export default ColorSchemeToggle;
