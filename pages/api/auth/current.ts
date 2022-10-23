@@ -1,7 +1,8 @@
 import { User } from '@prisma/client';
-import { getReasonPhrase, StatusCodes } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import authGuard, { getPayload } from '../../../guards/auth';
+import methodGuard from '../../../guards/method';
 import rateLimitGuard from '../../../guards/rateLimit';
 import withGuard from '../../../utils/guard';
 import prisma from '../../../utils/prisma';
@@ -16,11 +17,6 @@ const getCurrentUser = async (
   req: NextApiRequest,
   res: NextApiResponse<GetCurrentUserResponse>
 ) => {
-  if (req.method !== 'GET') {
-    return res
-      .status(StatusCodes.METHOD_NOT_ALLOWED)
-      .json({ status: 'error', msg: getReasonPhrase(StatusCodes.METHOD_NOT_ALLOWED) });
-  }
   const payload = (await getPayload(req))!;
 
   const user = await prisma.user.findUnique({
@@ -40,4 +36,4 @@ const getCurrentUser = async (
     .json({ status: 'success', msg: 'Fetched user successfully.', user });
 };
 
-export default withGuard(getCurrentUser, [rateLimitGuard, authGuard]);
+export default withGuard(getCurrentUser, [rateLimitGuard, methodGuard('GET'), authGuard]);

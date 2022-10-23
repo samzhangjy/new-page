@@ -1,8 +1,9 @@
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { check } from 'express-validator';
-import { getReasonPhrase, StatusCodes } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { NextApiRequest, NextApiResponse } from 'next';
+import methodGuard from '../../../guards/method';
 import rateLimitGuard from '../../../guards/rateLimit';
 import validationGuard from '../../../guards/validation';
 import withGuard from '../../../utils/guard';
@@ -26,13 +27,6 @@ export type LoginResponse = {
 };
 
 const loginHandler = async (req: LoginRequest, res: NextApiResponse<LoginResponse>) => {
-  if (req.method !== 'POST') {
-    return res.status(StatusCodes.METHOD_NOT_ALLOWED).json({
-      status: 'error',
-      msg: getReasonPhrase(StatusCodes.METHOD_NOT_ALLOWED),
-    });
-  }
-
   const { email, password } = req.body;
 
   const userWithPassword = await prisma.user.findUnique({
@@ -79,6 +73,7 @@ const loginHandler = async (req: LoginRequest, res: NextApiResponse<LoginRespons
 
 export default withGuard(loginHandler, [
   rateLimitGuard,
+  methodGuard('POST'),
   validationGuard([
     check('email').isEmail().isLength({ max: 50 }),
     check('password').isString().isLength({ max: 50 }),
