@@ -66,8 +66,8 @@ const registerHandler = async (
 export default withGuard(registerHandler, [
   rateLimitGuard,
   validationGuard([
-    check('email').isEmail(),
+    check('email').isEmail().isLength({ max: 50 }),
     check('username').isString().isLength({ min: 2, max: 20 }),
-    check('password').isString().isLength({ min: 8 }),
+    check('password').isString().isLength({ min: 8, max: 50 }),
   ]),
 ]);

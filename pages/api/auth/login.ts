@@ -80,7 +80,7 @@ const loginHandler = async (req: LoginRequest, res: NextApiResponse<LoginRespons
 export default withGuard(loginHandler, [
   rateLimitGuard,
   validationGuard([
-    check('email').isEmail(),
-    check('password').isString(),
+    check('email').isEmail().isLength({ max: 50 }),
+    check('password').isString().isLength({ max: 50 }),
   ]),
 ]);
