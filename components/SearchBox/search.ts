@@ -30,6 +30,8 @@ export const getCompletions = async (query: string): Promise<string[]> => {
 
 export const handleSearch = (searchEngine: SearchEngine, query: string) => {
   const curEngineDetail = searchEngines.find((engine) => engine.value === searchEngine);
-  if (!curEngineDetail) return;
-  window.open(`${curEngineDetail.url}${query}`, '_blank');
+  if (!curEngineDetail || !query) return;
+  // open in new tab
+  // window.open(`${curEngineDetail.url}${query}`, '_blank');
+  window.location.href = `${curEngineDetail.url}${query}`;
 };

@@ -5,6 +5,7 @@ import { ActionBar } from '../components/ActionBar';
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle';
 import { Header } from '../components/Header';
 import { SearchBox } from '../components/SearchBox';
+import { Footer } from '../components/Footer';
 
 export default function HomePage() {
   const onOffline = () => {
@@ -41,6 +42,7 @@ export default function HomePage() {
         <SearchBox />
       </Container>
       <ColorSchemeToggle />
+      <Footer />
     </Box>
   );
 }
