@@ -11,6 +11,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { NextLink } from '@mantine/next';
 import { showNotification } from '@mantine/notifications';
 import { setCookie } from 'cookies-next';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { z } from 'zod';
 import useApi from '../../hooks/useApi';
@@ -47,13 +48,16 @@ const LoginModal = ({ isOpened, onClose, onRegister }: LoginModalProps) => {
     validate: zodResolver(loginSchema),
     validateInputOnBlur: true,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogin = async ({ email, password }: LoginForm) => {
+    setIsSubmitting(true);
     const api = await useApi('/api/auth/login', {
       method: 'POST',
       body: { email, password },
     });
     const res: LoginResponse = await api.json();
+    setIsSubmitting(false);
     if (res.status === 'error') {
       showNotification({
         message: res.msg,
@@ -97,7 +101,7 @@ const LoginModal = ({ isOpened, onClose, onRegister }: LoginModalProps) => {
           {...form.getInputProps('password')}
         />
         <Space mt={theme.spacing.xl} />
-        <Button fullWidth type="submit">
+        <Button fullWidth type="submit" loading={isSubmitting} loaderProps={{ variant: 'dots' }}>
           Login
         </Button>
       </form>

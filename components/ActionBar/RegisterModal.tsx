@@ -10,6 +10,7 @@ import {
 import { useForm, zodResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
 import { setCookie } from 'cookies-next';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { z } from 'zod';
 import useApi from '../../hooks/useApi';
@@ -67,13 +68,16 @@ const RegisterModal = ({ isOpened, onClose }: RegisterModalProps) => {
     validate: zodResolver(registerSchema),
     validateInputOnBlur: true,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRegister = async ({ email, password, username }: RegisterForm) => {
+    setIsSubmitting(true);
     const api = await useApi('/api/auth/register', {
       method: 'POST',
       body: { email, password, username },
     });
     const res: RegisterUserResponse = await api.json();
+    setIsSubmitting(false);
     if (res.status === 'error') {
       showNotification({
         message: res.msg,
@@ -112,7 +116,7 @@ const RegisterModal = ({ isOpened, onClose }: RegisterModalProps) => {
           label="Confirm password"
         />
         <Space mt={theme.spacing.xl} />
-        <Button fullWidth type="submit">
+        <Button fullWidth type="submit" loading={isSubmitting} loaderProps={{ variant: 'dots' }}>
           Register
         </Button>
       </form>
