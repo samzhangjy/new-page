@@ -1,6 +1,7 @@
-import { Container } from '@mantine/core';
+import { Box, Container } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { useEffect } from 'react';
+import { ActionBar } from '../components/ActionBar';
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle';
 import { Header } from '../components/Header';
 import { SearchBox } from '../components/SearchBox';
@@ -33,12 +34,13 @@ export default function HomePage() {
   });
 
   return (
-    <>
+    <Box sx={{ height: 'calc(100vh - 100px)' }}>
+      <ActionBar />
       <Header />
       <Container>
         <SearchBox />
       </Container>
       <ColorSchemeToggle />
-    </>
+    </Box>
   );
 }

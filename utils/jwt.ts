@@ -4,12 +4,19 @@ const jwtSecret = process.env.JWT_SECRET || 'secret';
 
 export const signToken = (payload: object): Promise<string> =>
   new Promise((resolve, reject) => {
-    jwt.sign(payload, jwtSecret, (err, data) => {
-      if (err || !data) {
-        reject(new Error('Cannot generate access token.'));
+    jwt.sign(
+      payload,
+      jwtSecret,
+      {
+        expiresIn: process.env.JWT_EXPIRES,
+      },
+      (err, data) => {
+        if (err || !data) {
+          reject(new Error('Cannot generate access token.'));
+        }
+        resolve(data as string);
       }
-      resolve(data as string);
-    });
+    );
   });
 
 export const verifyToken = (token: string) =>
