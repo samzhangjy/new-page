@@ -15,4 +15,22 @@ model User {
   email    String  @unique
   username String?
   password String
+  pastes   Paste[]
+}
+
+enum PasteType {
+  TEXT
+  IMAGE
+  VIDEO
+  FILE
+}
+
+model Paste {
+  id        Int       @id @default(autoincrement())
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  Int
+  contents  String
+  type      PasteType @default(TEXT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }

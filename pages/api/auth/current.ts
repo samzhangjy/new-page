@@ -13,17 +13,28 @@ export type GetCurrentUserResponse = {
   user?: User;
 };
 
-const getCurrentUser = async (
-  req: NextApiRequest,
-  res: NextApiResponse<GetCurrentUserResponse>
-) => {
-  const payload = (await getPayload(req))!;
+export const getCurrrentUserId = async (req: NextApiRequest) => (await getPayload(req))!.id;
+
+export const getCurrentUser = async (req: NextApiRequest) => {
+  const payload = await getCurrrentUserId(req);
 
   const user = await prisma.user.findUnique({
     where: {
-      id: payload.id,
+      id: payload,
+    },
+    include: {
+      pastes: true,
     },
   });
+
+  return user;
+};
+
+const getCurrentUserHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<GetCurrentUserResponse>
+) => {
+  const user = await getCurrentUser(req);
 
   if (!user) {
     return res
@@ -36,4 +47,4 @@ const getCurrentUser = async (
     .json({ status: 'success', msg: 'Fetched user successfully.', user });
 };
 
-export default withGuard(getCurrentUser, [rateLimitGuard, methodGuard('GET'), authGuard]);
+export default withGuard(getCurrentUserHandler, [rateLimitGuard, methodGuard('GET'), authGuard]);
