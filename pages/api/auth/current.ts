@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { Paste, User } from '@prisma/client';
 import { StatusCodes } from 'http-status-codes';
 import { NextApiRequest, NextApiResponse } from 'next';
 import authGuard, { getPayload } from '../../../guards/auth';
@@ -10,7 +10,9 @@ import prisma from '../../../utils/prisma';
 export type GetCurrentUserResponse = {
   status: 'success' | 'error';
   msg: string;
-  user?: User;
+  user?: User & {
+    pastes: Paste[];
+  };
 };
 
 export const getCurrrentUserId = async (req: NextApiRequest) => (await getPayload(req))!.id;

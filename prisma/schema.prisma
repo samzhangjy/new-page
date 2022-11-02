@@ -33,4 +33,6 @@ model Paste {
   type      PasteType @default(TEXT)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  filename  String?
+  filesize  Int?
 }

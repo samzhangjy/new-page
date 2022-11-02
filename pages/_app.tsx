@@ -29,6 +29,7 @@ export default function App(props: AppProps & { colorScheme: 'auto' | 'light' | 
       <Head>
         <title>New Tab</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+        {colorScheme === 'dark' && <style>{':root { color-scheme: dark; }'}</style>}
       </Head>
 
       <Provider store={store}>

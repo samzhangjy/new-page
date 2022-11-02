@@ -1,33 +1,57 @@
-import { Box, Button, Center, Container, Space, Text, ThemeIcon } from '@mantine/core';
-import { IconTruckDelivery } from '@tabler/icons';
+import { ActionIcon, Container, Divider, Grid, Group, Title, Tooltip } from '@mantine/core';
+import { Paste } from '@prisma/client';
+import { IconHome } from '@tabler/icons';
+import { getCookie } from 'cookies-next';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { AddPaste, PasteCard } from '../../components/Paste';
+import useApi from '../../hooks/useApi';
+import { GetPastesResponse } from '../api/pastepad';
 
 const PastepadPage = () => {
   const router = useRouter();
+  const [pastes, setPastes] = useState<Paste[]>([]);
+
+  const getPastes = async () => {
+    const api = await useApi('/api/pastepad', {
+      method: 'GET',
+      token: getCookie('ACCESS_TOKEN') as string,
+    });
+    const res: GetPastesResponse = await api.json();
+    setPastes(res.pastes);
+  };
+
+  useEffect(() => {
+    getPastes();
+  }, []);
 
   return (
-    <Container>
-      <Center style={{ width: '100%', height: '100vh' }}>
-        <Box>
-          <ThemeIcon variant="light" size={300} sx={{ borderRadius: 50 }}>
-            <IconTruckDelivery size={250} stroke={1} />
-          </ThemeIcon>
-          <Space h={20} />
-          <Center>
-            <Text weight={700} inline>
-              Pastepad
-            </Text>
-            <Text>&nbsp;- Work in progress.</Text>
-          </Center>
-          <Space h={20} />
-          <Center>
-            <Button variant="default" onClick={() => router.push('/')}>
-              Back to Home
-            </Button>
-          </Center>
-        </Box>
-      </Center>
-    </Container>
+    <>
+      <Tooltip label="Home page">
+        <ActionIcon
+          onClick={() => router.push('/')}
+          size="xl"
+          sx={{ position: 'absolute', top: 10, left: 10 }}
+          variant="light"
+        >
+          <IconHome />
+        </ActionIcon>
+      </Tooltip>
+      <Container my={70}>
+        <Group position="apart">
+          <Title>Pastepad</Title>
+          <AddPaste onReload={getPastes} />
+        </Group>
+        <Divider my={20} />
+        <Grid gutter="lg">
+          {pastes.map((paste, index) => (
+            <Grid.Col key={index} sm={6} xs={12}>
+              <PasteCard {...paste} />
+            </Grid.Col>
+          ))}
+        </Grid>
+      </Container>
+    </>
   );
 };
 
