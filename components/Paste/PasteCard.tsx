@@ -13,10 +13,13 @@ import {
   ThemeIcon,
   Tooltip,
 } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { PasteType } from '@prisma/client';
 import { IconCheck, IconCopy, IconFile, IconTrash } from '@tabler/icons';
+import { getCookie } from 'cookies-next';
 import { useState } from 'react';
 import Moment from 'react-moment';
+import useApi from '../../hooks/useApi';
 import { truncate } from '../../utils/truncate';
 
 export type PasteProps = {
@@ -25,6 +28,8 @@ export type PasteProps = {
   type: PasteType;
   filename: string | null;
   filesize: number | null;
+  id: number;
+  onReload: () => void;
 };
 
 const getContentDetails = (contents: string) => ({
@@ -37,7 +42,28 @@ const getDownloadUrl = (url: string) => {
   return `${splitted[0]}/upload/fl_attachment/${splitted[1]}`;
 };
 
-const Paste = ({ updatedAt, contents, type, filename, filesize }: PasteProps) => {
+const deletePaste = async (id: number) => {
+  const api = await useApi(`/api/pastepad/${id}`, {
+    method: 'DELETE',
+    token: getCookie('ACCESS_TOKEN') as string,
+  });
+  const res = await api.json();
+  if (res.status !== 'success') {
+    showNotification({
+      message: 'Failed to delete paste.',
+    });
+  }
+};
+
+const Paste = ({
+  updatedAt,
+  contents,
+  type,
+  filename,
+  filesize,
+  id,
+  onReload: refreshPastes,
+}: PasteProps) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   return (
@@ -91,7 +117,17 @@ const Paste = ({ updatedAt, contents, type, filename, filesize }: PasteProps) =>
               >
                 Cancel
               </Button>
-              <Button size="xs" variant="light" color="red" ml="xs">
+              <Button
+                size="xs"
+                variant="light"
+                color="red"
+                ml="xs"
+                onClick={async () => {
+                  setShowDeleteConfirm(false);
+                  await deletePaste(id);
+                  refreshPastes();
+                }}
+              >
                 Delete
               </Button>
             </Popover.Dropdown>

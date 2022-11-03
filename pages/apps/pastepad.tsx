@@ -46,7 +46,7 @@ const PastepadPage = () => {
         <Grid gutter="lg">
           {pastes.map((paste, index) => (
             <Grid.Col key={index} sm={6} xs={12}>
-              <PasteCard {...paste} />
+              <PasteCard {...paste} onReload={getPastes} />
             </Grid.Col>
           ))}
         </Grid>
