@@ -1,4 +1,14 @@
-import { ActionIcon, Container, Divider, Grid, Group, Title, Tooltip } from '@mantine/core';
+import {
+  ActionIcon,
+  Center,
+  Container,
+  Divider,
+  Grid,
+  Group,
+  Loader,
+  Title,
+  Tooltip,
+} from '@mantine/core';
 import { Paste } from '@prisma/client';
 import { IconHome } from '@tabler/icons';
 import { getCookie } from 'cookies-next';
@@ -11,14 +21,17 @@ import { GetPastesResponse } from '../api/pastepad';
 const PastepadPage = () => {
   const router = useRouter();
   const [pastes, setPastes] = useState<Paste[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const getPastes = async () => {
+    setLoading(true);
     const api = await useApi('/api/pastepad', {
       method: 'GET',
       token: getCookie('ACCESS_TOKEN') as string,
     });
     const res: GetPastesResponse = await api.json();
     setPastes(res.pastes);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -43,6 +56,7 @@ const PastepadPage = () => {
           <AddPaste onReload={getPastes} />
         </Group>
         <Divider my={20} />
+        <Center>{loading && <Loader my="xl" variant="dots" />}</Center>
         <Grid gutter="lg">
           {pastes.map((paste, index) => (
             <Grid.Col key={index} sm={6} xs={12}>
